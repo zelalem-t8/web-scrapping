@@ -3,5 +3,6 @@ __pycache__/
 *.log
 *.csv
 venv/
+chromedriver-linux64
 chromedriver
 

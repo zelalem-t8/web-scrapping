@@ -90,8 +90,11 @@ try:
     # Check for downloaded file
     downloaded_files = [f for f in os.listdir(download_directory) if f.endswith('.csv')]
     if downloaded_files:
-        downloaded_filename = downloaded_files[0]  # Use the first CSV file in the directory
-        downloaded_file_path = os.path.join(download_directory, downloaded_filename)
+        latest_file = max(downloaded_files, key=lambda f: os.path.getmtime(os.path.join(download_directory, f)))
+    # Get the full file path of the latest CSV file
+        downloaded_file_path = os.path.join(download_directory, latest_file)
+        #downloaded_filename = downloaded_files[0]  # Use the first CSV file in the directory
+        #downloaded_file_path = os.path.join(download_directory, downloaded_filename)
         print(f'File downloaded successfully: {downloaded_file_path}')
     else:
         logging.error('Downloaded file not found or error in downloading.')
@@ -124,7 +127,7 @@ def clean_column_name(name):
     # Replace spaces with underscores and remove special characters
     name = re.sub(r'\s+', '_', name)  # Replace spaces with underscores
     name = re.sub(r'[^\w\s]', '', name)  # Remove special characters
-    return name.lower()  # Optionally convert to lowercase
+    return name.lower() 
 
 # Create database if it doesn't exist
 cursor.execute(f"SELECT 1 FROM pg_database WHERE datname = '{DB_NAME}';")
@@ -137,7 +140,7 @@ if not exists:
 df = pd.read_csv(downloaded_file_path)
 
 # Create table name based on the CSV file name
-table_name = downloaded_filename.split('.')[0]  # Remove file extension
+table_name = latest_file.split('.')[0]  # Remove file extension
 
 # Clean the column names
 columns = [clean_column_name(col) for col in df.columns]
@@ -158,6 +161,8 @@ for index, row in df.iterrows():
     insert_query = f"INSERT INTO {table_name} ({', '.join(columns)}) VALUES ({', '.join([f'%s' for _ in columns])});"
     cursor.execute(insert_query, tuple(row))
     print(f"Inserted row {index + 1} into {table_name}")
+    if index==10:
+        break
 
 # Close the connection
 cursor.close()
