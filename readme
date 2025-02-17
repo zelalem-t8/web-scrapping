@@ -1,1 +1,10 @@
-
+1. install dependancy
+a. wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+b. sudo dpkg -i google-chrome-stable_current_amd64.deb
+c. sudo apt --fix-broken install -y  # Fix any missing dependencies
+d. google-chrome --version  # Verify installation
+e. wget https://storage.googleapis.com/chrome-for-testing-public/133.0.6943.98/linux64/chrome-headless-shell-linux64.zip
+f. unzip chromedriver_linux64.zip
+g. sudo mv chromedriver my_env/bin/chromedriver
+h sudo chmod +x my_env/bin/chromedriver
+i. chromedriver --version  # Verify installation
